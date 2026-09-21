@@ -3,5 +3,5 @@ export interface WorkspaceItem {
   name: string;
   type: "folder" | "file";
   parentId: string | null;
-  content: string
+  content?: string
 }
