@@ -1,6 +1,6 @@
 import { useWorkSpaceStore } from "@/store/workspace-store";
 import { getBreadcrumbs } from "@/helper/breadcrumbs.intial";
-import { FaFolder } from "react-icons/fa";
+import { FaFile, FaFolder } from "react-icons/fa";
 
 const Breadcrumbs = () => {
   const { items, selectedFolderId, setSelectedFolder } = useWorkSpaceStore();
@@ -18,7 +18,11 @@ const Breadcrumbs = () => {
             <li key={item.id}>
               {isLast ? (
                 <span className="inline-flex items-center gap-2 font-medium text-black">
-                  <FaFolder className="text-amber-500" />
+                  {item.type === "folder" ? (
+                    <FaFolder className="text-amber-500" />
+                    ) : (
+                    <FaFile className="text-gray-500" />
+                  )}
                   {item.name}
                 </span>
               ) : (

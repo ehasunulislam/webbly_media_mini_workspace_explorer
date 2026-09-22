@@ -5,9 +5,10 @@ import { FaFile, FaFolder } from "react-icons/fa";
 import FolderTree from "./Folder-tree";
 import ButtonGroup from "./ButtonGroup";
 import Breadcrumbs from "./Breadcrumbs";
+import Search from "./Search";
 
 const WorkSpace = () => {
-  const { items, selectedFolderId } = useWorkSpaceStore();
+  const { items, selectedFolderId, setSelectedFolder } = useWorkSpaceStore();
 
   const rootFolder = items.find((item) => item.parentId === null);
   
@@ -18,6 +19,17 @@ const WorkSpace = () => {
         {/* sidebar  */}
         <aside className="w-72 border-r p-5">
           <h1 className="text-xl font-bold text-black">Workspace</h1>
+
+          <Search 
+            items={items}
+            onSelect={(i) => {
+                if(i.type === "folder") {
+                    setSelectedFolder(i.id);
+                } else if (i.parentId) {
+                    setSelectedFolder(i.parentId);
+                }
+            }}
+          />
 
           <section className="mt-6">
             {rootFolder && <FolderTree item={rootFolder} />}
