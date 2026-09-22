@@ -64,13 +64,6 @@ const FolderTree = ({ item, level = 0 }: IFolderTreeProps ) => {
         onClick={handleClick}
        >
         <span className="text-black">
-            {/* {
-                folders.length > 0 ?
-                    expanded ?
-                    <MdKeyboardArrowDown /> :
-                    <MdKeyboardArrowRight /> : 
-                    ""
-            } */}
             {
                 item.type === "folder" &&
                   folders.length > 0 &&
@@ -104,17 +97,6 @@ const FolderTree = ({ item, level = 0 }: IFolderTreeProps ) => {
             />
          ))
       }
-
-      {/* {
-        expanded && 
-         file.map((folder) => (
-            <FolderTree
-                key={folder.id}
-                item={folder}
-                level={level + 1}
-            />
-         ))
-      } */}
     </div>
   )
 }

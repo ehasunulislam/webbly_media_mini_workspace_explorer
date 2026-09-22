@@ -1,65 +1,14 @@
+"use client"
+
+import { getInitialItems } from "@/helper/getInitial.locaStorage";
+import { saveItemsToStorage } from "@/helper/savaData.localStorage";
 import { WorkSpaceStore } from "@/interfaces/workspace.interface";
-import { WorkspaceItem } from "@/types/workspace";
-import { ToastContainer } from "react-toastify";
 import { create } from "zustand";
 
-const initialItems: WorkspaceItem[] = [
-  {
-    id: "workspace",
-    name: "Workspace",
-    type: "folder",
-    parentId: null,
-  },
-  {
-    id: "projects",
-    name: "Projects",
-    type: "folder",
-    parentId: "workspace",
-  },
-  {
-    id: "webbly",
-    name: "Webbly",
-    type: "folder",
-    parentId: "projects",
-  },
-  {
-    id: "notes",
-    name: "notes.txt",
-    type: "file",
-    parentId: "webbly",
-    content: "Welcome to Webbly Media.",
-  },
-  {
-    id: "tasks",
-    name: "tasks.txt",
-    type: "file",
-    parentId: "webbly",
-    content: "Build the Mini Workspace Explorer.",
-  },
-  {
-    id: "personal",
-    name: "Personal",
-    type: "folder",
-    parentId: "projects",
-  },
-  {
-    id: "documents",
-    name: "Documents",
-    type: "folder",
-    parentId: "workspace",
-  },
-  {
-    id: "readme",
-    name: "README.txt",
-    type: "file",
-    parentId: "workspace",
-    content: "Mini Workspace Explorer",
-  },
-];
 
 // function for the folder-structure
 export const useWorkSpaceStore = create<WorkSpaceStore>((set) => ({
-  items: initialItems,
+  items: getInitialItems(),
   selectedFolderId: "workspace",
 
   setSelectedFolder: (id) =>
@@ -73,8 +22,8 @@ export const useWorkSpaceStore = create<WorkSpaceStore>((set) => ({
         const trimmedName = name.trim();
 
         if (!trimmedName) {
-            alert("Name is required");
-            return state;
+          alert("Name is required");
+          return state;
         }
 
         const duplicateExists = state.items.some(
@@ -84,23 +33,25 @@ export const useWorkSpaceStore = create<WorkSpaceStore>((set) => ({
         );
 
         if (duplicateExists) {
-            alert("Item with same name already exists");
-            return state;
+          alert("Item with same name already exists");
+          return state;
         }
 
+        const updatedItems = [
+          ...state.items,
+          {
+            id: crypto.randomUUID(),
+            name: trimmedName,
+            type,
+            parentId: state.selectedFolderId,
+            ...(type === "file" ? { content: "" } : {}),
+          },
+        ];
+
+        saveItemsToStorage(updatedItems);
+
         return {
-            items: [
-                ...state.items,
-                {
-                    id: crypto.randomUUID(),
-                    name: trimmedName,
-                    type,
-                    parentId: state.selectedFolderId,
-                    ...(type === "file"
-                        ? { content: "" }
-                        : {}),
-                },
-            ],
+          items: updatedItems,
         };
     }),
 
@@ -134,12 +85,16 @@ export const useWorkSpaceStore = create<WorkSpaceStore>((set) => ({
             return state;
         }
 
+        const updatedItems = state.items.map((item) =>
+          item.id === id
+            ? { ...item, name: trimmedName }
+            : item
+        );
+
+        saveItemsToStorage(updatedItems);
+
         return {
-            items: state.items.map((item) =>
-                item.id === id
-                ? { ...item, name: trimmedName }
-                : item
-            ),
+            items: updatedItems
         };
   }),
 
@@ -167,8 +122,14 @@ export const useWorkSpaceStore = create<WorkSpaceStore>((set) => ({
 
       const deletedItem = state.items.find((item) => item.id === id);
 
+      const updatedItems = state.items.filter(
+        (item) => !idsToDelete.has(item.id)
+      );
+
+      saveItemsToStorage(updatedItems);
+
       return {
-        items: state.items.filter((item) => !idsToDelete.has(item.id)),
+        items: updatedItems,
 
         selectedFolderId:
           state.selectedFolderId === id

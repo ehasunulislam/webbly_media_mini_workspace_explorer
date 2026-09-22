@@ -5,10 +5,21 @@ import { FaFile, FaFolder } from "react-icons/fa";
 import FolderTree from "./Folder-tree";
 
 const WorkSpace = () => {
-  const { items, selectedFolderId, createItem, renameItem, setSelectedFolder } = useWorkSpaceStore();
+  const { items, selectedFolderId, createItem, renameItem, deleteItem } = useWorkSpaceStore();
 
   const rootFolder = items.find((item) => item.parentId === null);
-  const selectedItem = items.find((item) => item.id === selectedFolderId) ?? null
+  const selectedItem = items.find((item) => item.id === selectedFolderId) ?? null;
+
+
+  const handleDelete = () => {
+    if (!selectedItem) return;
+
+    const confirmed = window.confirm(`Delete "${selectedItem.name}"?`);
+
+    if (confirmed) {
+      deleteItem(selectedItem.id);
+    }
+  }
 
   return (
     <main className="min-h-screen bg-slate-50 p-6">
@@ -18,15 +29,6 @@ const WorkSpace = () => {
           <h1 className="text-xl font-bold text-black">Workspace</h1>
 
           <section className="mt-6">
-            {/* {items.filter((i) => i.type === "folder").map((folder) => (
-                    <div key={folder.id} className="py-2 text-gray-800 flex gap-2">
-                        <FaFolder className="text-amber-500" />
-                        <div className="text-[0.8rem]">
-                            {folder.name}
-                        </div>
-                    </div>
-                ))} */}
-
             {rootFolder && <FolderTree item={rootFolder} />}
           </section>
         </aside>
@@ -71,6 +73,11 @@ const WorkSpace = () => {
                 }}
                 className="rounded-md bg-yellow-400 px-4 py-2 text-white cursor-pointer">
                 Rename
+            </button>
+
+            <button onClick={handleDelete}
+                className="rounded-md bg-red-600 px-4 py-2 text-white cursor-pointer">
+                Delete
             </button>
           </div>
 
