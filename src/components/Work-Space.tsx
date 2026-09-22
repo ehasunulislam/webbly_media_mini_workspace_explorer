@@ -2,10 +2,15 @@
 
 import { useWorkSpaceStore } from "@/store/workspace-store"
 import { FaFile, FaFolder } from "react-icons/fa";
+import FolderTree from "./Folder-tree";
 
 const WorkSpace = () => {
 
   const { items } = useWorkSpaceStore();
+
+  const rootFolder = items.find(
+    (item) => item.parentId === null
+  )
 
   return (
     <main className="min-h-screen bg-slate-50 p-6">
@@ -18,14 +23,20 @@ const WorkSpace = () => {
             </h1>
 
             <section className="mt-6">
-                {items.filter((i) => i.type === "folder").map((folder) => (
+                {/* {items.filter((i) => i.type === "folder").map((folder) => (
                     <div key={folder.id} className="py-2 text-gray-800 flex gap-2">
                         <FaFolder className="text-amber-500" />
                         <div className="text-[0.8rem]">
                             {folder.name}
                         </div>
                     </div>
-                ))}
+                ))} */}
+
+                {
+                    rootFolder && (
+                        <FolderTree item={rootFolder} />
+                    )
+                }
             </section>
         </aside>
 
