@@ -1,5 +1,6 @@
-import { WorkspaceItem } from '@/types/workspace';
-import { create } from 'zustand'
+import { WorkSpaceStore } from "@/interfaces/workspace.interface";
+import { WorkspaceItem } from "@/types/workspace";
+import { create } from "zustand";
 
 const initialItems: WorkspaceItem[] = [
   {
@@ -54,3 +55,79 @@ const initialItems: WorkspaceItem[] = [
     content: "Mini Workspace Explorer",
   },
 ];
+
+// function for the folder-structure
+export const useWorkSpaceStore = create<WorkSpaceStore>((set) => ({
+  items: initialItems,
+  selectedFolderId: "workspace",
+
+  setSelectedFolder: (id) =>
+    set({
+      selectedFolderId: id,
+    }),
+
+  // create the item
+  createItem: (name, type) =>
+    set((state) => ({
+      items: [
+        ...state.items,
+        {
+          id: crypto.randomUUID(),
+          name,
+          type,
+          parentId: state.selectedFolderId,
+          ...(type === "file" ? { content: "" } : {}),
+        },
+      ],
+    })),
+
+  // reName item
+  renameItem: (id, name) =>
+    set((state) => ({
+      items: state.items.map((i) => {
+        return i.id === id ? { ...i, name } : i;
+      }),
+    })),
+
+  // delete item
+  deleteItem: (id) =>
+    set((state) => {
+      const idsToDelete = new Set<string>([id]);
+
+      let changed = true;
+
+      while (changed) {
+        changed = false;
+
+        state.items.forEach((i) => {
+          if (
+            i.parentId &&
+            idsToDelete.has(i.parentId) &&
+            !idsToDelete.has(i.id)
+          ) {
+            idsToDelete.add(i.id);
+            changed = true;
+          }
+        });
+      }
+
+      const deletedItem = state.items.find((item) => item.id === id);
+
+      return {
+        items: state.items.filter((item) => !idsToDelete.has(item.id)),
+
+        selectedFolderId:
+          state.selectedFolderId === id
+            ? deletedItem?.parentId || "workspace"
+            : state.selectedFolderId,
+      };
+    }),
+
+  // update Content
+  updateFileContent: (id, content) =>
+    set((state) => ({
+      items: state.items.map((item) =>
+        item.id === id ? { ...item, content } : item,
+      ),
+    })),
+}));
