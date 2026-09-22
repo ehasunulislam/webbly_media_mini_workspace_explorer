@@ -4,12 +4,13 @@ import { useWorkSpaceStore } from "@/store/workspace-store";
 import { FaFile, FaFolder } from "react-icons/fa";
 import FolderTree from "./Folder-tree";
 import ButtonGroup from "./ButtonGroup";
+import Breadcrumbs from "./Breadcrumbs";
 
 const WorkSpace = () => {
   const { items, selectedFolderId } = useWorkSpaceStore();
 
   const rootFolder = items.find((item) => item.parentId === null);
-
+  
 
   return (
     <main className="min-h-screen bg-slate-50 p-6">
@@ -29,6 +30,8 @@ const WorkSpace = () => {
           <h2 className="text-2xl font-semibold text-black">Workspace</h2>
 
           <ButtonGroup />
+
+          <Breadcrumbs />
 
           <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
             {items
