@@ -106,11 +106,42 @@ export const useWorkSpaceStore = create<WorkSpaceStore>((set) => ({
 
   // reName item
   renameItem: (id, name) =>
-    set((state) => ({
-      items: state.items.map((i) => {
-        return i.id === id ? { ...i, name } : i;
-      }),
-    })),
+    set((state) => {
+        const trimmedName = name.trim();
+
+        if (!trimmedName) {
+            alert("Name is required");
+            return state;
+        }
+
+        const currentItem = state.items.find(
+            (item) => item.id === id
+        );
+
+        if (!currentItem) {
+            return state;
+        }
+
+        const duplicateExists = state.items.some(
+            (item) =>
+                item.id !== id &&
+                item.parentId === currentItem.parentId &&
+                item.name.toLowerCase() === trimmedName.toLowerCase()
+        );
+
+        if (duplicateExists) {
+            alert("Item with same name already exists");
+            return state;
+        }
+
+        return {
+            items: state.items.map((item) =>
+                item.id === id
+                ? { ...item, name: trimmedName }
+                : item
+            ),
+        };
+  }),
 
   // delete item
   deleteItem: (id) =>

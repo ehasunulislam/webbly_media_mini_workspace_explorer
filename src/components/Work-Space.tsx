@@ -5,9 +5,10 @@ import { FaFile, FaFolder } from "react-icons/fa";
 import FolderTree from "./Folder-tree";
 
 const WorkSpace = () => {
-  const { items, selectedFolderId, createItem } = useWorkSpaceStore();
+  const { items, selectedFolderId, createItem, renameItem, setSelectedFolder } = useWorkSpaceStore();
 
   const rootFolder = items.find((item) => item.parentId === null);
+  const selectedItem = items.find((item) => item.id === selectedFolderId) ?? null
 
   return (
     <main className="min-h-screen bg-slate-50 p-6">
@@ -34,7 +35,7 @@ const WorkSpace = () => {
         <section className="flex-1 p-6">
           <h2 className="text-2xl font-semibold text-black">Workspace</h2>
 
-          {/* top bar  */}
+          {/* top bar button group */}
           <div className="mt-4 flex gap-3">
             <button onClick={() => {
                     const name = prompt("Folder name");
@@ -51,11 +52,25 @@ const WorkSpace = () => {
                     const name = prompt("File name");
 
                     if (name) {
-                    createItem(name, "file");
+                        createItem(name, "file");
                     }
                 }}
                 className="rounded-md bg-green-600 px-4 py-2 text-white cursor-pointer">
               New File
+            </button>
+
+            <button onClick={() => {
+                    if(!selectedItem) {
+                        return 
+                    }
+                    const name = prompt("Enter new name", selectedItem.name);
+
+                    if (name !== null) {
+                        renameItem(selectedItem.id, name);
+                    }
+                }}
+                className="rounded-md bg-yellow-400 px-4 py-2 text-white cursor-pointer">
+                Rename
             </button>
           </div>
 
