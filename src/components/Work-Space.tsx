@@ -6,7 +6,7 @@ import FolderTree from "./Folder-tree";
 
 const WorkSpace = () => {
 
-  const { items } = useWorkSpaceStore();
+  const { items, selectedFolderId } = useWorkSpaceStore();
 
   const rootFolder = items.find(
     (item) => item.parentId === null
@@ -48,7 +48,7 @@ const WorkSpace = () => {
             </h2>
 
             <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
-                {items.filter((i) => i.parentId === "workspace").map((i) => (
+                {items.filter((i) => i.parentId === selectedFolderId).map((i) => (
                     <div key={i.id} className="rounded-xl border p-5">
                         <div className="text-3xl">
                             {

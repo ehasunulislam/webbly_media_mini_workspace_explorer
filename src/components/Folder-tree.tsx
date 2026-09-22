@@ -3,11 +3,12 @@
 import { IFolderTreeProps } from "@/interfaces/folderTree.interface"
 import { useWorkSpaceStore } from "@/store/workspace-store";
 import { useState } from "react"
-import { FaFolder } from "react-icons/fa";
+import { FaFile, FaFolder } from "react-icons/fa";
 import { MdKeyboardArrowDown, MdKeyboardArrowRight } from "react-icons/md";
 
 const FolderTree = ({ item, level = 0 }: IFolderTreeProps ) => {
   const [expanded, setExpanded] = useState(true);
+  const isFolder = item.type === "folder";
 
   const items = useWorkSpaceStore(
     (state) => state.items
@@ -25,9 +26,13 @@ const FolderTree = ({ item, level = 0 }: IFolderTreeProps ) => {
     (child) => child.parentId === item.id
   );
 
-  const folders = children.filter(
+  const folders = items.filter(
     (child) => child.type === "folder"
   );
+
+  const file = items.filter(
+    (child) => child.type === "file"
+  )
 
   const isSelected = selectedFolderId === item.id;
 
@@ -35,8 +40,12 @@ const FolderTree = ({ item, level = 0 }: IFolderTreeProps ) => {
   const handleClick = () => {
     setSelectedFolder(item.id);
 
-    if(folders.length > 0) {
-        setExpanded((previous) => !previous)
+    if(isFolder) {
+        setSelectedFolder(item.id);
+
+        if(children.length > 0) {
+            setExpanded((prev) => !prev)
+        }
     }
   }
 
@@ -55,17 +64,31 @@ const FolderTree = ({ item, level = 0 }: IFolderTreeProps ) => {
         onClick={handleClick}
        >
         <span className="text-black">
-            {
+            {/* {
                 folders.length > 0 ?
                     expanded ?
                     <MdKeyboardArrowDown /> :
                     <MdKeyboardArrowRight /> : 
                     ""
-            }
+            } */}
+            {
+                item.type === "folder" &&
+                  folders.length > 0 &&
+                   (expanded ? (
+                     <MdKeyboardArrowDown />
+                     ) : (
+                     <MdKeyboardArrowRight />
+            ))}
         </span>
 
         <span>
-            <FaFolder className="text-amber-500" />
+            {
+                item.type === "folder" ? (
+                    <FaFolder className="text-amber-500" />
+                ) : (
+                    <FaFile className="text-gray-500" />
+                )
+            }
         </span>
 
         <span className="text-gray-600 text-[0.8rem]">{item.name}</span>
@@ -73,7 +96,7 @@ const FolderTree = ({ item, level = 0 }: IFolderTreeProps ) => {
 
       {
         expanded && 
-         folders.map((folder) => (
+         children.map((folder) => (
             <FolderTree
                 key={folder.id}
                 item={folder}
@@ -81,6 +104,17 @@ const FolderTree = ({ item, level = 0 }: IFolderTreeProps ) => {
             />
          ))
       }
+
+      {/* {
+        expanded && 
+         file.map((folder) => (
+            <FolderTree
+                key={folder.id}
+                item={folder}
+                level={level + 1}
+            />
+         ))
+      } */}
     </div>
   )
 }
