@@ -1,5 +1,6 @@
 import { WorkSpaceStore } from "@/interfaces/workspace.interface";
 import { WorkspaceItem } from "@/types/workspace";
+import { ToastContainer } from "react-toastify";
 import { create } from "zustand";
 
 const initialItems: WorkspaceItem[] = [
@@ -68,18 +69,40 @@ export const useWorkSpaceStore = create<WorkSpaceStore>((set) => ({
 
   // create the item
   createItem: (name, type) =>
-    set((state) => ({
-      items: [
-        ...state.items,
-        {
-          id: crypto.randomUUID(),
-          name,
-          type,
-          parentId: state.selectedFolderId,
-          ...(type === "file" ? { content: "" } : {}),
-        },
-      ],
-    })),
+    set((state) => {
+        const trimmedName = name.trim();
+
+        if (!trimmedName) {
+            alert("Name is required");
+            return state;
+        }
+
+        const duplicateExists = state.items.some(
+            (item) =>
+                item.parentId === state.selectedFolderId &&
+                item.name.toLowerCase() === trimmedName.toLowerCase()
+        );
+
+        if (duplicateExists) {
+            alert("Item with same name already exists");
+            return state;
+        }
+
+        return {
+            items: [
+                ...state.items,
+                {
+                    id: crypto.randomUUID(),
+                    name: trimmedName,
+                    type,
+                    parentId: state.selectedFolderId,
+                    ...(type === "file"
+                        ? { content: "" }
+                        : {}),
+                },
+            ],
+        };
+    }),
 
   // reName item
   renameItem: (id, name) =>
