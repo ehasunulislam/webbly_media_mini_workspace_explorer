@@ -10,11 +10,18 @@ import { create } from "zustand";
 export const useWorkSpaceStore = create<WorkSpaceStore>((set) => ({
   items: getInitialItems(),
   selectedFolderId: "workspace",
+  selectedFileId: null,
 
   setSelectedFolder: (id) =>
     set({
       selectedFolderId: id,
+      selectedFileId: null,
     }),
+
+  setSelectedFile: (id) =>
+    set({
+        selectedFileId: id,
+      }),
 
   // create the item
   createItem: (name, type) =>
@@ -140,9 +147,15 @@ export const useWorkSpaceStore = create<WorkSpaceStore>((set) => ({
 
   // update Content
   updateFileContent: (id, content) =>
-    set((state) => ({
-      items: state.items.map((item) =>
-        item.id === id ? { ...item, content } : item,
-      ),
-    })),
+    set((state) => {
+      const updatedItems = state.items.map((item) =>
+        item.id === id ? { ...item, content } : item
+      );
+
+      saveItemsToStorage(updatedItems);
+
+      return {
+        items: updatedItems,
+      };
+  }),
 }));

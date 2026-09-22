@@ -3,6 +3,8 @@ import { WorkspaceItem } from "@/types/workspace";
 export interface WorkSpaceStore {
     items: WorkspaceItem[];
     selectedFolderId: string;
+    selectedFileId: string | null;
+    setSelectedFile: (id: string) => void;
 
     setSelectedFolder: (
         id: string
